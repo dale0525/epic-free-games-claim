@@ -37,17 +37,16 @@ body {
   min-height: 80vh;
 }
 
-h1 {
-  font-size: 1.8em;
-  margin: 0.2em 0;
-  text-align: center;
-}
-
 p {
   margin: 0.5em 0 1em 0;
   text-align: center;
   font-size: 1em;
   color: #c0bbbb;
+}
+
+.claiming-status {
+  color: #f0ad4e;
+  font-weight: 500;
 }
 
 button {
@@ -112,10 +111,15 @@ button:focus-visible {
   width: 10em;
 }
 
+.manual-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .checkboxes {
   display: flex;
   flex-direction: column;
-  gap: 0.75em;
+  gap: 0.25em;
   width: 100%;
 }
 
@@ -123,7 +127,23 @@ button:focus-visible {
   flex-direction: row;
 }
 
-.checkboxes span {
+/* One block per platform. A hairline divider between blocks (not after the
+   last) reads as separate sections without needing boxed/bordered cards. */
+.platform-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0.5em 0;
+}
+
+.platform-group:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* The main checkbox row for a platform, and the two toggles above the free
+   games list (Future Games / Descriptions) — pill-styled either way. */
+.checkboxes > span,
+.platform-group > span {
   display: flex;
   align-items: center;
   gap: 0.5em;
@@ -144,6 +164,144 @@ button:focus-visible {
   width: 1.2em;
   height: 1.2em;
   cursor: pointer;
+}
+
+/* A platform's sub-options, shown only while its main checkbox is checked —
+   indented to read as belonging to the row above. Shared by Steam's review
+   threshold, IndieGala's wheel toggle, and Prime Gaming's external-platform
+   toggles, so all three line up the same way instead of three near-duplicate
+   indentation rules. */
+.sub-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  padding-left: 1.35em;
+}
+
+/* Plain rather than pill-styled, unlike a platform's own main checkbox row —
+   keeps sub-options visually lighter-weight than the row they belong to. */
+.sub-options span {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.sub-options .hint {
+  margin: 0;
+  text-align: left;
+  font-size: 0.8em;
+  color: #8a8585;
+}
+
+/* Steam-only review gate. */
+.review-threshold {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  font-size: 0.85em;
+}
+
+.review-threshold .threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.review-threshold input[type="number"] {
+  width: 4em;
+  padding: 0.25em 0.4em;
+  border-radius: 4px;
+  border: none;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.review-threshold .tier-select {
+  width: 100%;
+  padding: 0.3em 0.4em;
+  border-radius: 4px;
+  border: none;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Prime Gaming's Legacy Games redeem email, under its toggle. */
+.legacy-email {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  padding-left: 1.35em;
+  font-size: 0.85em;
+}
+
+.legacy-email input[type="email"] {
+  padding: 0.3em 0.4em;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.legacy-email input[aria-invalid="true"] {
+  border-color: #c0392b;
+}
+
+/* Sits after the row label (which is flex: 1), so it hugs the right edge. */
+.login-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+.login-dot {
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.login-status.logged-in {
+  color: #60ea67;
+}
+
+.login-status.logged-in .login-dot {
+  background-color: #60ea67;
+}
+
+/* Doubles as a link straight to that platform's login page — amber to read
+   as "action needed", matching the claiming-in-progress indicator's color. */
+.login-status.logged-out {
+  color: #f0ad4e;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-status.logged-out:hover {
+  text-decoration: underline;
+}
+
+.login-status.logged-out .login-dot {
+  background-color: #f0ad4e;
+}
+
+/* Signed in, but the account can't claim (e.g. no Prime): amber like
+   logged-out, since it needs the user's attention, but not a link. */
+.login-status.account-warning {
+  color: #f0ad4e;
+  font-weight: 600;
+  cursor: help;
+}
+
+.login-status.account-warning .login-dot {
+  background-color: #f0ad4e;
 }
 
 .tabs {
@@ -176,6 +334,24 @@ button:focus-visible {
   color: #60ea67;
   border-bottom: 3px solid #60ea67;
   font-weight: 600;
+}
+
+/* The tab colors above assume the dark theme: in light mode the inactive
+   label (70% white) vanished into the white background, hiding the Free
+   Games tab and the pending-redemptions list on it. */
+@media (prefers-color-scheme: light) {
+  .tabs {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .tabs button {
+    color: rgba(33, 53, 71, 0.7);
+  }
+
+  .tabs button:not(.active):hover {
+    color: #213547;
+    background-color: rgba(0, 0, 0, 0.04);
+  }
 }
 
 .tab-content {
@@ -246,6 +422,24 @@ button:focus-visible {
   text-align: left;
 }
 
+/* A Prime Gaming offer this account already collected: still listed while
+   it's live, but dimmed so the ones left to claim stand out. */
+.card.claimed {
+  opacity: 0.6;
+}
+
+.card .game-claimed {
+  color: #60ea67;
+  font-weight: 600;
+}
+
+/* The theme green is unreadable as text on white. */
+@media (prefers-color-scheme: light) {
+  .card .game-claimed {
+    color: #1b7a30;
+  }
+}
+
 .card .game-date {
   font-size: 1.0em;
   color: #888;
@@ -281,6 +475,41 @@ button:focus-visible {
   font-family: inherit;
 }
 
+/* Single row by design — nowrap plus horizontal scroll as a fallback rather
+   than wrapping to a second row, which read as cluttered with 5 platforms. */
+.platform-filter {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.3em;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 0.75em;
+}
+
+.platform-chip {
+  flex-shrink: 0;
+  padding: 0.25em 0.6em;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: transparent;
+  color: #8a8585;
+  font-size: 0.8em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.platform-chip:hover {
+  border-color: #60ea67;
+}
+
+.platform-chip.active {
+  color: #60ea67;
+  border-color: #60ea67;
+  background-color: rgba(96, 234, 103, 0.1);
+}
+
 .center {
   display: flex;
     flex-direction: column;
@@ -301,4 +530,76 @@ button:focus-visible {
 .footer span {
   padding: 0.5em;
   font-size: 1.2em;
+}
+
+.pending-redemptions {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 1em;
+  margin-bottom: 0.75em;
+}
+
+.pending-redemptions-title {
+  margin: 0 0 0.4em;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #ea9a60;
+}
+
+.pending-redemption {
+  border: 1px solid #ea9a60;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pending-redemption-info {
+  min-width: 0;
+}
+
+.pending-redemption-title {
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pending-redemption-platform {
+  font-weight: normal;
+  color: #888;
+}
+
+.pending-redemption-code {
+  font-size: 0.85em;
+  color: #555;
+}
+
+.pending-redemption-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pending-redemption-actions button,
+.pending-redemption-actions a {
+  font-size: 0.8em;
+  padding: 3px 8px;
+  border: 1px solid #c0bbbb;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pending-redemption-actions button:hover,
+.pending-redemption-actions a:hover {
+  border-color: #60ea67;
 }
